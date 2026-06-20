@@ -2,14 +2,13 @@ import { Environment, Float, Sparkles, useScroll, Text, PresentationControls } f
 import { useFrame, useThree } from '@react-three/fiber';
 import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
-import { EffectComposer, Bloom } from '@react-three/postprocessing'; // Brought back the glow!
+import { EffectComposer, Bloom } from '@react-three/postprocessing'; 
 
 const Flame = ({ position }) => {
   const flameRef = useRef(null);
   useFrame(({ clock }) => {
     if (!flameRef.current) return;
     const t = clock.getElapsedTime();
-    // Flame flicker animation
     flameRef.current.scale.y = 1 + Math.sin(t * 25) * 0.1 + Math.sin(t * 15) * 0.05;
     flameRef.current.scale.x = 1 + Math.sin(t * 20) * 0.05;
     flameRef.current.scale.z = 1 + Math.sin(t * 20) * 0.05;
@@ -37,15 +36,32 @@ const ElegantCandle = ({ position, rotation }) => {
 
 const CurvedText = ({ text, radius, position }) => {
   const letters = text.split("");
-  const arc = Math.PI / 1.8; 
+  const arc = Math.PI / 2.2; 
+  
   return (
     <group position={position}>
       {letters.map((char, i) => {
-        const angle = -arc / 2 + (i / (letters.length - 1)) * arc;
+        let angle = -arc / 2 + (i / (letters.length - 1)) * arc;
+        
+        if (char === "K" || char === "k") {
+          angle -= 0.15; 
+        }
+
         const x = Math.sin(angle) * radius;
         const z = Math.cos(angle) * radius;
+        
         return (
-          <Text key={i} position={[x, 0, z]} rotation={[0, angle, 0]} fontSize={0.65} anchorX="center" anchorY="middle" font="/GreatVibes-Regular.ttf" outlineWidth={0.02} outlineColor="#3b0764">
+          <Text 
+            key={i} 
+            position={[x, 0, z]} 
+            rotation={[0, angle, 0]} 
+            fontSize={0.65} 
+            anchorX="center" 
+            anchorY="middle" 
+            font="/GreatVibes-Regular.ttf" 
+            outlineWidth={0.02} 
+            outlineColor="#3b0764"
+          >
             {char}
             <meshStandardMaterial color="#ffd700" emissive="#ffaa00" emissiveIntensity={2} metalness={1} roughness={0.1} toneMapped={false} />
           </Text>
@@ -59,7 +75,6 @@ const OrbitingDiamonds = ({ scrollData }) => {
   const ringRef = useRef(null);
   useFrame((_, delta) => {
     if (ringRef.current) {
-      // Diamonds orbit based on scroll
       const targetRotation = -(scrollData.offset * Math.PI * 6);
       ringRef.current.rotation.y = THREE.MathUtils.lerp(ringRef.current.rotation.y, targetRotation, delta * 3);
     }
@@ -89,11 +104,15 @@ export default function Scene({ started }) {
   const tunnelRef = useRef(null);
   const directionalLightRef = useRef(null);
   
+  const spinTimer = useRef(0);
+  
   const scrollData = useScroll();
   const { viewport } = useThree();
 
   const isMobile = viewport.width < 5;
-  const responsiveScale = isMobile ? Math.min(0.75, viewport.width / 6.5) : 1;
+  
+  // THE FIX: Cake scaled down globally. Reduced from 0.75 down to 0.60 for mobile!
+  const responsiveScale = isMobile ? Math.min(0.60, viewport.width / 8) : 0.85;
 
   useFrame((state, delta) => {
     let targetZ, targetY;
@@ -103,19 +122,20 @@ export default function Scene({ started }) {
       targetY = 10;
       if (introGroupRef.current) introGroupRef.current.scale.set(0, 0, 0); 
     } else {
+      
+      spinTimer.current += delta;
+      
       const scroll = scrollData.offset;
       const baseZ = isMobile ? 11 : 8; 
       targetZ = baseZ - (scroll * 4); 
       targetY = 1.5 + (scroll * 1.5);
       
-      // Atmospheric light shift
       if (started && directionalLightRef.current) {
         const themeWarpProgress = Math.min(1, Math.max(0, (scroll - 0.3) * 2)); 
         directionalLightRef.current.color.lerp(new THREE.Color(themeWarpProgress > 0.5 ? "#fca5a5" : "#c084fc"), delta * 2);
         directionalLightRef.current.intensity = THREE.MathUtils.lerp(1.5, themeWarpProgress > 0.8 ? 2.5 : 1.5, delta * 2);
       }
 
-      // The Cake Escape Sequence
       if (introGroupRef.current) {
         let currentScale = 1;
         let flyUpY = 0;
@@ -135,13 +155,15 @@ export default function Scene({ started }) {
         scrollPositionRef.current.position.y = THREE.MathUtils.lerp(scrollPositionRef.current.position.y, -1.5 - (scroll * 2), delta * 3);
       }
       
-      // --- RESTORED CAKE ANIMATION ---
-      // The cake now constantly spins very slowly, and speeds up when scrolled!
       if (cakeSpinRef.current) {
-        const time = state.clock.getElapsedTime();
-        const autoSpin = time * 0.3; // Gentle constant spin
-        const scrollSpin = scroll * Math.PI * 4; // Fast spin on scroll
-        cakeSpinRef.current.rotation.y = THREE.MathUtils.lerp(cakeSpinRef.current.rotation.y, autoSpin + scrollSpin, delta * 3);
+        const autoSpin = spinTimer.current * 0.15; 
+        const scrollSpin = scroll * Math.PI * 4; 
+        
+        cakeSpinRef.current.rotation.y = THREE.MathUtils.lerp(
+          cakeSpinRef.current.rotation.y, 
+          autoSpin + scrollSpin, 
+          delta * 3
+        );
       }
     }
 
@@ -163,8 +185,6 @@ export default function Scene({ started }) {
       </group>
 
       <group scale={responsiveScale}>
-        {/* --- RESTORED FLOAT ANIMATION --- */}
-        {/* Adds a gentle, breathing hover effect to the entire setup */}
         <Float speed={2} rotationIntensity={0.05} floatIntensity={0.3}>
           <group ref={scrollPositionRef} position={[0, -1.5, 0]}>
             
@@ -176,15 +196,12 @@ export default function Scene({ started }) {
                   
                   <mesh position={[0, 1.5, 0]}><cylinderGeometry args={[2.5, 2.5, 4, 32]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
 
-                  {/* --- RESTORED HIGH-RES GEOMETRY & MATERIALS --- */}
-                  {/* Stand */}
                   <group position={[0, -0.6, 0]}>
                     <mesh position={[0, 0, 0]}><cylinderGeometry args={[1.5, 1.8, 0.2, 64]} /><meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} /></mesh>
                     <mesh position={[0, 0.4, 0]}><cylinderGeometry args={[0.5, 0.5, 0.6, 32]} /><meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} /></mesh>
                     <mesh position={[0, 0.75, 0]}><cylinderGeometry args={[2.2, 2.2, 0.1, 64]} /><meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} /></mesh>
                   </group>
 
-                  {/* Tiers (Using meshPhysicalMaterial and clearcoat for that glossy fondant look) */}
                   <mesh position={[0, 0.8, 0]}><cylinderGeometry args={[1.8, 1.8, 1.2, 64]} /><meshPhysicalMaterial color="#fffdd0" roughness={0.3} clearcoat={0.5} /></mesh>
                   <mesh position={[0, 0.2, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[1.8, 0.08, 16, 64]} /><meshStandardMaterial color="#ffb6c1" roughness={0.4} /> </mesh>
 
@@ -207,8 +224,6 @@ export default function Scene({ started }) {
         </Float>
       </group>
 
-      {/* --- RESTORED BLOOM --- */}
-      {/* This gives the gold text, diamonds, and flames their beautiful neon glow */}
       <EffectComposer disableNormalPass>
         <Bloom luminanceThreshold={1.2} mipmapBlur intensity={1.5} />
       </EffectComposer>

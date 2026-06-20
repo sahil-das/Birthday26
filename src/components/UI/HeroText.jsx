@@ -21,14 +21,14 @@ export default function HeroText() {
         {/* CSS glowing effect replicating the 3D emissive material */}
         <h2 className="text-6xl md:text-8xl text-[#ffd700] font-cursive leading-none" 
             style={{ textShadow: '0 0 15px #ffaa00, 0 0 30px #ffaa00' }}>
-          Khushi
+          Khushi Ji
         </h2>
       </div>
 
       {/* --- BOTTOM OF SCREEN --- */}
-      <div ref={bottomTextRef} className="animate-bounce pb-6">
-        <p className="text-sm md:text-base text-slate-300 font-light max-w-md mx-auto drop-shadow-lg bg-slate-900/50 px-4 py-2 rounded-full backdrop-blur-md">
-          ↓ Scroll down to unwrap memories ↓
+      <div className="absolute bottom-10 left-0 w-full flex justify-center z-10">
+        <p className="text-white/70 tracking-[0.2em] uppercase text-sm font-light animate-pulse cursor-pointer">
+          A secret meant for you
         </p>
       </div>
 

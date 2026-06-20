@@ -12,7 +12,7 @@ export default function App() {
   const overlayRef = useRef(null);
   const buttonRef = useRef(null);
   
-  const audioRef = useRef(new Audio('https://cdn.pixabay.com/download/audio/2022/05/05/audio_82136e6eb7.mp3'));
+  const audioRef = useRef(new Audio('https://cdn.pixabay.com/audio/2026/04/30/audio_64412ddeb4.mp3'));
 
   const handleEnter = () => {
     audioRef.current.loop = true;
