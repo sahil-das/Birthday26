@@ -27,9 +27,7 @@ export default function HeroText() {
 
       {/* --- BOTTOM OF SCREEN --- */}
       <div className="absolute bottom-10 left-0 w-full flex justify-center z-10">
-        <p className="text-white/70 tracking-[0.2em] uppercase text-sm font-light animate-pulse cursor-pointer">
-          A secret meant for you
-        </p>
+
       </div>
 
     </section>
