@@ -21,7 +21,8 @@ export default function Wishes() {
   useEffect(() => {
     setMounted(true);
     if (typeof window !== 'undefined') {
-      const calculatedHeight = Math.min(window.innerHeight * 0.65, 480);
+      // Increased the height limit slightly to ensure the signature is fully visible
+      const calculatedHeight = Math.min(window.innerHeight * 0.75, 520);
       setScrollHeight(calculatedHeight);
     }
   }, []);
@@ -105,7 +106,8 @@ export default function Wishes() {
             className="absolute top-4 left-[3%] w-[94%] bg-[#fdf5e6] shadow-[inset_0_0_60px_rgba(139,69,19,0.35)] border-x border-amber-900/40 overflow-hidden z-10"
           >
             <div style={{ height: scrollHeight }} className="w-full flex flex-col items-center justify-center p-5 text-center mix-blend-multiply relative overflow-y-auto">
-              <div ref={textRef} className="relative z-20 flex flex-col items-center justify-center w-full">
+              
+              <div ref={textRef} className="relative z-20 flex flex-col items-center justify-center w-full pb-12">
                 
                 <h3 className="text-lg md:text-xl text-amber-950 font-serif mb-3 font-bold">
                   Happy Birthday
@@ -119,10 +121,10 @@ export default function Wishes() {
 
                 <div className="mt-4 pt-2 w-4/5 mx-auto relative flex flex-col items-center border-t border-amber-900/15">
                    <p className="text-amber-950/70 text-[9px] tracking-[0.3em] uppercase mb-0.5">Warmly,</p>
-                   <p className="text-3xl font-cursive text-amber-800 drop-shadow-sm">Sahil</p>
+                   <p className="text-3xl font-[cursive] text-amber-800 drop-shadow-sm">Sahil</p>
                 </div>
 
-                <div className="absolute -bottom-2 md:-bottom-3 w-9 h-9 md:w-11 md:h-11 bg-[radial-gradient(circle_at_30%_30%,#dc2626,#991b1b,#7f1d1d)] rounded-full shadow-[0_3px_6px_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.3),inset_0_-2px_6px_rgba(0,0,0,0.5)] flex items-center justify-center border border-red-900/50">
+                <div className="absolute -bottom-0 md:-bottom-2 w-9 h-9 md:w-11 md:h-11 bg-[radial-gradient(circle_at_30%_30%,#dc2626,#991b1b,#7f1d1d)] rounded-full shadow-[0_3px_6px_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.3),inset_0_-2px_6px_rgba(0,0,0,0.5)] flex items-center justify-center border border-red-900/50">
                    <span className="text-yellow-400/90 text-sm md:text-lg font-serif font-bold">K</span>
                 </div>
 
